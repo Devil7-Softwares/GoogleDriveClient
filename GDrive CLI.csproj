@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp5.0</TargetFramework>
+    <RootNamespace>Devil7.Utils.GDriveCLI</RootNamespace>
+    <AssemblyName>gdrive</AssemblyName>
+    <StartupObject>Devil7.Utils.GDriveCLI.Program</StartupObject>
+  </PropertyGroup>
+
+</Project>
