@@ -8,4 +8,8 @@
     <StartupObject>Devil7.Utils.GDriveCLI.Program</StartupObject>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Terminal.Gui" Version="0.70.0" />
+  </ItemGroup>
+
 </Project>
