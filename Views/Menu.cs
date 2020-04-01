@@ -10,6 +10,9 @@ namespace Devil7.Utils.GDriveCLI.Views
                 new MenuBarItem ("_File", new MenuItem [] {
                     new MenuItem("_New Folder", "", Dialogs.NewFolder),
                     new MenuItem ("_Quit", "", Dialogs.Quit)
+                }),
+                new MenuBarItem ("_View", new MenuItem [] {
+                   new MenuItem("Sort By","", Dialogs.SortBy)
                 })
             });
 

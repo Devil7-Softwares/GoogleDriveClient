@@ -49,6 +49,7 @@ namespace Devil7.Utils.GDriveCLI.Views
             Application.Run(dialog);
             Application.Refresh();
         }
+
         public static void Quit()
         {
             int dialogResult = MessageBox.Query(50, 7, "Quit", "Are you sure you want to quit?", "Yes", "No");
@@ -60,6 +61,31 @@ namespace Devil7.Utils.GDriveCLI.Views
             {
                 Application.Top.SetFocus(MyDrive.Window);
             }
+        }
+
+        public static void SortBy()
+        {
+            Dialog dialog = new Dialog("Sort By", 25, 10);
+            RadioGroup radioGroup = new RadioGroup(5, 1, new string[] { "Name", "Date" }, (int)Utils.Settings.SortBy);
+            dialog.Add(radioGroup);
+
+            Button btnOk = new Button("OK", true);
+            btnOk.Clicked = delegate ()
+            {
+                Utils.Settings.SortBy = (Utils.SortBy)radioGroup.Selected;
+                Utils.Settings.Save();
+                dialog.Running = false;
+            };
+            Button btnCancel = new Button("Cancel");
+            btnCancel.Clicked = delegate ()
+            {
+                dialog.Running = false;
+            };
+            dialog.AddButton(btnOk);
+            dialog.AddButton(btnCancel);
+
+            Application.Run(dialog);
+            Application.Refresh();
         }
     }
 }
