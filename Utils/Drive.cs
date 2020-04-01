@@ -2,6 +2,7 @@
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Drive.v3;
+using Google.Apis.Drive.v3.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
 using System;
@@ -98,12 +99,12 @@ namespace Devil7.Utils.GDriveCLI.Utils
                     listRequest.Q = string.Format("\"{0}\" in parents", id);
                     listRequest.Fields = "nextPageToken, files(id, name, ownedByMe, modifiedTime, size, mimeType)";
 
-                    IList<Google.Apis.Drive.v3.Data.File> files = listRequest.Execute().Files;
+                    IList<File> files = listRequest.Execute().Files;
                     if (files != null && files.Count > 0)
                     {
                         foreach (var file in files)
                         {
-                            items.Add(new Models.FileListItem(file.Id, file.Name, GetOwnersName(file), file.ModifiedTime.GetValueOrDefault(), file.Size.GetValueOrDefault(), file.MimeType));
+                            items.Add(FileToItem(file));
                         }
                     }
                     else
@@ -121,7 +122,11 @@ namespace Devil7.Utils.GDriveCLI.Utils
         #endregion
 
         #region Private Functions
-        private static string GetOwnersName(Google.Apis.Drive.v3.Data.File file)
+        private static Models.FileListItem FileToItem(File file)
+        {
+            return new Models.FileListItem(file.Id, file.Name, GetOwnersName(file), file.ModifiedTime.GetValueOrDefault(), file.Size.GetValueOrDefault(), file.MimeType);
+        }
+        private static string GetOwnersName(File file)
         {
             string owner = "me";
             if (file != null && !file.OwnedByMe.GetValueOrDefault() && file.Owners != null)
