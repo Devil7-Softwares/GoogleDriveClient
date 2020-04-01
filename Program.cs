@@ -33,6 +33,8 @@ namespace Devil7.Utils.GDriveCLI
                 return;
             }
 
+            Utils.Settings.Load();
+
             Application.Init();
 
             Views.MyDrive.Create();
