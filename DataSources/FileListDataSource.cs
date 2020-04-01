@@ -71,18 +71,6 @@ namespace Devil7.Utils.GDriveCLI.DataSources
 
             RenderUstr(driver, text, width);
         }
-
-        public void UpdateIsstems(List<Models.FileListItem> items, string previousParentId)
-        {
-            this.Items.Clear();
-            this.Items.AddRange(items);
-
-
-            if (previousParentId != "root")
-            {
-                this.Items.Insert(0, new Models.FileListItem(previousParentId, "..", "", DateTime.Now, 0, Utils.Constants.MIME_GDRIVE_DIRECTORY));
-            }
-        }
         #endregion
 
         #region Private Methods
