@@ -56,7 +56,7 @@ namespace Devil7.Utils.GDriveCLI.Views
         {
             Task.Run(delegate ()
             {
-                List<Models.FileListItem> files = Drive.ListFiles(currentItem.Id).Result;
+                List<Models.FileListItem> files = Utils.Drive.ListFiles(currentItem.Id).Result;
 
                 if (currentItem.Id == "root")
                 {
