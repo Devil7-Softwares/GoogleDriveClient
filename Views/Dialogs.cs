@@ -74,6 +74,9 @@ namespace Devil7.Utils.GDriveCLI.Views
             {
                 Utils.Settings.SortBy = (Utils.SortBy)radioGroup.Selected;
                 Utils.Settings.Save();
+
+                MyDrive.UpdateDataSource();
+
                 dialog.Running = false;
             };
             Button btnCancel = new Button("Cancel");
@@ -99,6 +102,9 @@ namespace Devil7.Utils.GDriveCLI.Views
             {
                 Utils.Settings.SortOrder = (Utils.SortOrder)radioGroup.Selected;
                 Utils.Settings.Save();
+
+                MyDrive.UpdateDataSource();
+
                 dialog.Running = false;
             };
             Button btnCancel = new Button("Cancel");
