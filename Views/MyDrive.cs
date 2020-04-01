@@ -9,11 +9,14 @@ namespace Devil7.Utils.GDriveCLI.Views
     {
         #region Variables
         private static Stack<Models.FileListItem> Routes = new Stack<Models.FileListItem>();
-        private static Models.FileListItem CurrentDirectory = null;
         #endregion
 
         #region Properties
+        public static Models.FileListItem CurrentDirectory { get; private set; }
+        public static List<Models.FileListItem> Files { get; private set; }
         public static Window Window { get; private set; }
+
+        private static Controls.CustomListView ListView { get; set; }
         #endregion
 
         #region Public Methods
@@ -31,13 +34,28 @@ namespace Devil7.Utils.GDriveCLI.Views
 
             CreateListView();
         }
+
+        public static void UpdateDataSource()
+        {
+            DataSources.FileListDataSource ds = new DataSources.FileListDataSource(Files);
+            ds.DirectoriesFirst();
+
+            ListView.Source = ds;
+            Files = ds.Items;
+        }
+
+        public static void SelectItem(Models.FileListItem item)
+        {
+            int index = Files.IndexOf(item);
+            ListView.SelectedItem = index;
+        }
         #endregion
 
         #region Private Methods
         private static void CreateListView()
         {
             DataSources.FileListDataSource ds = new DataSources.FileListDataSource();
-            Controls.CustomListView listView = new Controls.CustomListView(ds)
+            ListView = new Controls.CustomListView(ds)
             {
                 Width = Dim.Fill(1),
                 Height = Dim.Fill(1),
@@ -45,18 +63,18 @@ namespace Devil7.Utils.GDriveCLI.Views
                 Y = 0,
                 AllowsMarking = true
             };
-            listView.OnKeyPressed += ListView_OnKeyPressed;
+            ListView.OnKeyPressed += ListView_OnKeyPressed;
 
-            Window.Add(listView);
+            Window.Add(ListView);
 
-            ChangeDirectory(listView, new Models.FileListItem("root", "My Drive", "me", DateTime.Now, 0, Utils.Constants.MIME_GDRIVE_DIRECTORY), Utils.Direction.Forward);
+            ChangeDirectory(ListView, new Models.FileListItem("root", "My Drive", "me", DateTime.Now, 0, Utils.Constants.MIME_GDRIVE_DIRECTORY), Utils.Direction.Forward);
         }
 
         private static void ChangeDirectory(ListView listView, Models.FileListItem currentItem, Utils.Direction direction)
         {
             Task.Run(delegate ()
             {
-                List<Models.FileListItem> files = Utils.Drive.ListFiles(currentItem.Id).Result;
+                Files = Utils.Drive.ListFiles(currentItem.Id).Result;
 
                 if (currentItem.Id == "root")
                 {
@@ -69,13 +87,10 @@ namespace Devil7.Utils.GDriveCLI.Views
                         Routes.Push(CurrentDirectory);
                     }
 
-                    files.Insert(0, new Models.FileListItem("", "..", "", DateTime.Now, 0, Utils.Constants.MIME_GDRIVE_DIRECTORY));
+                    Files.Insert(0, new Models.FileListItem("", "..", "", DateTime.Now, 0, Utils.Constants.MIME_GDRIVE_DIRECTORY));
                 }
 
-                DataSources.FileListDataSource ds = new DataSources.FileListDataSource(files);
-                ds.DirectoriesFirst();
-
-                listView.Source = ds;
+                UpdateDataSource();
 
                 Window.Title = currentItem.Name;
 
