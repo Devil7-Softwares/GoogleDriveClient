@@ -95,21 +95,35 @@ namespace Devil7.Utils.GDriveCLI.Utils
                 List<Models.FileListItem> items = new List<Models.FileListItem>();
                 try
                 {
-                    FilesResource.ListRequest listRequest = Service.Files.List();
-                    listRequest.Q = string.Format("\"{0}\" in parents", id);
-                    listRequest.Fields = "nextPageToken, files(id, name, ownedByMe, modifiedTime, size, mimeType)";
+                    string NextPageToken = null;
+                    int PageNumber = 1;
+                    while (!string.IsNullOrWhiteSpace(NextPageToken) || PageNumber == 1)
+                    {
+                        FilesResource.ListRequest listRequest = Service.Files.List();
+                        listRequest.Q = string.Format("\"{0}\" in parents", id);
+                        listRequest.Fields = "nextPageToken, files(id, name, ownedByMe, modifiedTime, size, mimeType)";
 
-                    IList<File> files = listRequest.Execute().Files;
-                    if (files != null && files.Count > 0)
-                    {
-                        foreach (var file in files)
+                        if (PageNumber > 1)
+                            listRequest.PageToken = NextPageToken;
+
+                        FileList fileList = listRequest.Execute();
+
+                        IList<File> files = fileList.Files;
+                        NextPageToken = fileList.NextPageToken;
+
+                        if (files != null && files.Count > 0)
                         {
-                            items.Add(FileToItem(file));
+                            foreach (var file in files)
+                            {
+                                items.Add(FileToItem(file));
+                            }
                         }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No files found.");
+                        else
+                        {
+                            Console.WriteLine("No files found.");
+                        }
+
+                        PageNumber++;
                     }
                 }
                 catch (Exception ex)
