@@ -38,7 +38,7 @@ namespace Devil7.Utils.GDriveCLI.Views
         public static void UpdateDataSource()
         {
             DataSources.FileListDataSource ds = new DataSources.FileListDataSource(Files);
-            ds.DirectoriesFirst();
+            ds.Sort();
 
             ListView.Source = ds;
             Files = ds.Items;

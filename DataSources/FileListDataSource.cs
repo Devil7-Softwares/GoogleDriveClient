@@ -105,9 +105,13 @@ namespace Devil7.Utils.GDriveCLI.DataSources
         #endregion
 
         #region Sorting Methods
-        public void DirectoriesFirst()
+        public void Sort()
         {
-            this.Items = this.Items.OrderBy((item) => item.Name == ".." ? 0 : item.IsDirectory ? 0 : 1).ToList();
+            // Sort by User Preference
+            this.Items.Sort(new Utils.FileListItemComparer());
+
+            // Put Directories First
+            this.Items = this.Items.OrderBy((item) => item.Name == ".." ? 0 : item.IsDirectory ? 1 : 2).ToList();
         }
         #endregion
     }
