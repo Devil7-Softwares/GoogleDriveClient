@@ -1,8 +1,20 @@
 ﻿namespace Devil7.Utils.GDriveCLI.Utils
 {
-    public enum Direction
+    public enum Direction : byte
     {
-        Forward,
-        Backward
+        Forward = 0,
+        Backward = 1
+    }
+
+    public enum SortBy : byte
+    {
+        Name = 0,
+        Date = 1
+    }
+
+    public enum SortOrder : byte
+    {
+        Ascending = 0,
+        Descending = 1
     }
 }
