@@ -87,5 +87,30 @@ namespace Devil7.Utils.GDriveCLI.Views
             Application.Run(dialog);
             Application.Refresh();
         }
+
+        public static void SortOrder()
+        {
+            Dialog dialog = new Dialog("Sort By", 25, 10);
+            RadioGroup radioGroup = new RadioGroup(3, 1, new string[] { "Ascending", "Descending" }, (int)Utils.Settings.SortOrder);
+            dialog.Add(radioGroup);
+
+            Button btnOk = new Button("OK", true);
+            btnOk.Clicked = delegate ()
+            {
+                Utils.Settings.SortOrder = (Utils.SortOrder)radioGroup.Selected;
+                Utils.Settings.Save();
+                dialog.Running = false;
+            };
+            Button btnCancel = new Button("Cancel");
+            btnCancel.Clicked = delegate ()
+            {
+                dialog.Running = false;
+            };
+            dialog.AddButton(btnOk);
+            dialog.AddButton(btnCancel);
+
+            Application.Run(dialog);
+            Application.Refresh();
+        }
     }
 }

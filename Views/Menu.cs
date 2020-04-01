@@ -12,7 +12,8 @@ namespace Devil7.Utils.GDriveCLI.Views
                     new MenuItem ("_Quit", "", Dialogs.Quit)
                 }),
                 new MenuBarItem ("_View", new MenuItem [] {
-                   new MenuItem("Sort By","", Dialogs.SortBy)
+                   new MenuItem("Sort By","", Dialogs.SortBy),
+                   new MenuItem("Sort Order", "", Dialogs.SortOrder)
                 })
             });
 
