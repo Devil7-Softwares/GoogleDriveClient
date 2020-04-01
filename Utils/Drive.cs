@@ -119,6 +119,21 @@ namespace Devil7.Utils.GDriveCLI.Utils
                 return items;
             });
         }
+
+        public static Task<Models.FileListItem> NewFolder(string parent, string folderName)
+        {
+            return Task.Run(delegate ()
+            {
+                File newFolder = new File()
+                {
+                    Name = folderName,
+                    MimeType = Utils.Constants.MIME_GDRIVE_DIRECTORY,
+                    Parents = new List<string>() { parent }
+                };
+
+                return FileToItem(Service.Files.Create(newFolder).Execute());
+            });
+        }
         #endregion
 
         #region Private Functions
