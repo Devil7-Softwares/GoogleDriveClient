@@ -145,7 +145,10 @@ namespace Devil7.Utils.GDriveCLI.Utils
                     Parents = new List<string>() { parent }
                 };
 
-                return FileToItem(Service.Files.Create(newFolder).Execute());
+                FilesResource.CreateRequest createRequest = Service.Files.Create(newFolder);
+                createRequest.Fields = "id, name, ownedByMe, modifiedTime, size, mimeType";
+
+                return FileToItem(createRequest.Execute());
             });
         }
         #endregion
