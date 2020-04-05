@@ -104,7 +104,7 @@ namespace Devil7.Utils.GDriveCLI.Utils
                     while (!string.IsNullOrWhiteSpace(NextPageToken) || PageNumber == 1)
                     {
                         FilesResource.ListRequest listRequest = Service.Files.List();
-                        listRequest.Q = string.Format("\"{0}\" in parents", id);
+                        listRequest.Q = string.Format("\"{0}\" in parents and trashed=false", id);
                         listRequest.Fields = "nextPageToken, files(id, name, ownedByMe, modifiedTime, size, mimeType)";
 
                         if (PageNumber > 1)
