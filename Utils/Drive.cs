@@ -7,7 +7,6 @@ using Google.Apis.Services;
 using Google.Apis.Util.Store;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,7 +23,7 @@ namespace Devil7.Utils.GDriveCLI.Utils
 
         private static readonly IAuthorizationCodeFlow AuthFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
         {
-            ClientSecrets = new ClientSecrets { ClientId = Utils.Secrets.GDRIVE_CLIENT_ID, ClientSecret = Utils.Secrets.GDRIVE_CLIENT_SECRET },
+            ClientSecrets = new ClientSecrets { ClientId = Secrets.GDRIVE_CLIENT_ID, ClientSecret = Secrets.GDRIVE_CLIENT_SECRET },
             Scopes = Scopes,
             DataStore = new FileDataStore("Drive.Api.Auth.Store")
         });
@@ -40,7 +39,7 @@ namespace Devil7.Utils.GDriveCLI.Utils
         {
             Console.WriteLine("Authendication needed!");
             Console.WriteLine("Go to the following url in your browser:");
-            Console.WriteLine(AuthFlow.CreateAuthorizationCodeRequest(Utils.Constants.URI_GDRIVE_REDIRECT).Build().ToString());
+            Console.WriteLine(AuthFlow.CreateAuthorizationCodeRequest(Constants.URI_GDRIVE_REDIRECT).Build().ToString());
 
             Console.WriteLine();
             Console.WriteLine("Enter verification code: ");
@@ -49,7 +48,7 @@ namespace Devil7.Utils.GDriveCLI.Utils
 
             try
             {
-                TokenResponse response = AuthFlow.ExchangeCodeForTokenAsync(Environment.UserName, token, Utils.Constants.URI_GDRIVE_REDIRECT, new CancellationToken()).Result;
+                TokenResponse response = AuthFlow.ExchangeCodeForTokenAsync(Environment.UserName, token, Constants.URI_GDRIVE_REDIRECT, new CancellationToken()).Result;
                 AuthFlow.DataStore.StoreAsync(Environment.UserName, response).Wait();
                 return true;
             }
@@ -57,7 +56,7 @@ namespace Devil7.Utils.GDriveCLI.Utils
             {
                 string errorMessage = ex.Message;
 
-                Match match = (new Regex(Utils.Constants.REGEX_AUTH_ERROR)).Match(ex.Message);
+                Match match = (new Regex(Constants.REGEX_AUTH_ERROR)).Match(ex.Message);
                 if (match.Success)
                 {
                     errorMessage = string.Format("{0} ({1})", match.Groups["Description"], match.Groups["Error"]);
@@ -76,7 +75,7 @@ namespace Devil7.Utils.GDriveCLI.Utils
                 TokenResponse response = AuthFlow.LoadTokenAsync(Environment.UserName, new CancellationToken()).Result;
                 Service = new DriveService(new BaseClientService.Initializer()
                 {
-                    HttpClientInitializer = new UserCredential(AuthFlow, Environment.UserName, response, Utils.Secrets.GDRIVE_PROJECT_ID),
+                    HttpClientInitializer = new UserCredential(AuthFlow, Environment.UserName, response, Secrets.GDRIVE_PROJECT_ID),
                     ApplicationName = ApplicationName
                 });
                 return true;
@@ -115,7 +114,7 @@ namespace Devil7.Utils.GDriveCLI.Utils
                         {
                             foreach (var file in files)
                             {
-                                items.Add(FileToItem(file));
+                                items.Add(Misc.FileToItem(file));
                             }
                         }
                         else
@@ -141,31 +140,15 @@ namespace Devil7.Utils.GDriveCLI.Utils
                 File newFolder = new File()
                 {
                     Name = folderName,
-                    MimeType = Utils.Constants.MIME_GDRIVE_DIRECTORY,
+                    MimeType = Constants.MIME_GDRIVE_DIRECTORY,
                     Parents = new List<string>() { parent }
                 };
 
                 FilesResource.CreateRequest createRequest = Service.Files.Create(newFolder);
                 createRequest.Fields = "id, name, ownedByMe, modifiedTime, size, mimeType";
 
-                return FileToItem(createRequest.Execute());
+                return Misc.FileToItem(createRequest.Execute());
             });
-        }
-        #endregion
-
-        #region Private Functions
-        private static Models.FileListItem FileToItem(File file)
-        {
-            return new Models.FileListItem(file.Id, file.Name, GetOwnersName(file), file.ModifiedTime.GetValueOrDefault(), file.Size.GetValueOrDefault(), file.MimeType);
-        }
-        private static string GetOwnersName(File file)
-        {
-            string owner = "me";
-            if (file != null && !file.OwnedByMe.GetValueOrDefault() && file.Owners != null)
-            {
-                owner = string.Join(", ", file.Owners.Select((item) => item.DisplayName));
-            }
-            return owner;
         }
         #endregion
     }
