@@ -8,7 +8,7 @@ namespace Devil7.Utils.GDriveCLI.Views
     class MyDrive
     {
         #region Variables
-        private static Stack<Models.FileListItem> Routes = new Stack<Models.FileListItem>();
+        private static readonly Stack<Models.FileListItem> Routes = new Stack<Models.FileListItem>();
         #endregion
 
         #region Properties
@@ -67,10 +67,10 @@ namespace Devil7.Utils.GDriveCLI.Views
 
             Window.Add(ListView);
 
-            ChangeDirectory(ListView, new Models.FileListItem("root", "My Drive", "me", DateTime.Now, 0, Utils.Constants.MIME_GDRIVE_DIRECTORY), Utils.Direction.Forward);
+            ChangeDirectory(new Models.FileListItem("root", "My Drive", "me", DateTime.Now, 0, Utils.Constants.MIME_GDRIVE_DIRECTORY), Utils.Direction.Forward);
         }
 
-        private static void ChangeDirectory(ListView listView, Models.FileListItem currentItem, Utils.Direction direction)
+        private static void ChangeDirectory(Models.FileListItem currentItem, Utils.Direction direction)
         {
             Task.Run(delegate ()
             {
@@ -106,22 +106,20 @@ namespace Devil7.Utils.GDriveCLI.Views
         {
             if (args.KeyEvent.Key == Key.Enter)
             {
-                ListView listView = sender as ListView;
-                if (listView != null && listView.SelectedItem >= 0)
+                if (sender is ListView listView && listView.SelectedItem >= 0)
                 {
-                    DataSources.FileListDataSource dataSource = listView.Source as DataSources.FileListDataSource;
-                    if (dataSource != null)
+                    if (listView.Source is DataSources.FileListDataSource dataSource)
                     {
                         Models.FileListItem selectedItem = dataSource.Items[listView.SelectedItem];
                         if (selectedItem.IsDirectory)
                         {
                             if (selectedItem.Name == "..")
                             {
-                                ChangeDirectory(listView, Routes.Pop(), Utils.Direction.Backward);
+                                ChangeDirectory(Routes.Pop(), Utils.Direction.Backward);
                             }
                             else
                             {
-                                ChangeDirectory(listView, selectedItem, Utils.Direction.Forward);
+                                ChangeDirectory(selectedItem, Utils.Direction.Forward);
                             }
                         }
                     }

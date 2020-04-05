@@ -17,8 +17,8 @@ namespace Devil7.Utils.GDriveCLI.Utils
     public class Drive
     {
         #region Variables
-        private static string[] Scopes = { DriveService.Scope.Drive };
-        private static string ApplicationName = "Google Drive CLI Client";
+        private static readonly string[] Scopes = { DriveService.Scope.Drive };
+        private static readonly string ApplicationName = "Google Drive CLI Client";
 
         private static DriveService Service = null;
 

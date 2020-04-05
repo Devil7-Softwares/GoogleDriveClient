@@ -12,7 +12,7 @@ namespace Devil7.Utils.GDriveCLI.Utils
     public class Settings
     {
         #region Variables
-        private static string SettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Devil7.Utils.GDriveCLI.json");
+        private static readonly string SettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Devil7.Utils.GDriveCLI.json");
         #endregion
 
         #region Properties
