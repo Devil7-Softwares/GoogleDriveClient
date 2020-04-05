@@ -4,6 +4,7 @@ using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
 using Google.Apis.Services;
+using Google.Apis.Upload;
 using Google.Apis.Util.Store;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,10 @@ namespace Devil7.Utils.GDriveCLI.Utils
             Scopes = Scopes,
             DataStore = new FileDataStore("Drive.Api.Auth.Store")
         });
+        #endregion
+
+        #region Properties
+        public static FilesResource.CreateMediaUpload CurrentUploadRequest { get; }
         #endregion
 
         #region Public Functions
@@ -149,6 +154,28 @@ namespace Devil7.Utils.GDriveCLI.Utils
 
                 return Misc.FileToItem(createRequest.Execute());
             });
+        }
+
+        public static FilesResource.CreateMediaUpload StartUpload(string parent, System.IO.FileInfo fileInfo, System.IO.FileStream fileStream, CancellationToken cancellationToken)
+        {
+            string MimeType = MimeMapping.MimeUtility.GetMimeMapping(fileInfo.Extension);
+
+            File file = new File()
+            {
+                Name = fileInfo.Name,
+                MimeType = MimeType,
+                Parents = new List<string>() { parent }
+            };
+
+            FilesResource.CreateMediaUpload uploadRequest = new FilesResource.CreateMediaUpload(Service, file, fileStream, MimeType)
+            {
+                Fields = "id, name, ownedByMe, modifiedTime, size, mimeType",
+                ChunkSize = ResumableUpload.MinimumChunkSize
+            };
+
+            uploadRequest.UploadAsync(cancellationToken);
+
+            return uploadRequest;
         }
         #endregion
     }
