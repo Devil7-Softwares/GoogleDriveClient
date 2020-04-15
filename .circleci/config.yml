@@ -1,0 +1,19 @@
+ version: 2.1
+
+ jobs:
+   build:
+     docker: 
+       - image: mcr.microsoft.com/dotnet/core/sdk:5.0-focal 
+    
+     steps:
+       - checkout
+       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime win-x86 --output ./publish/win-x86 --no-self-contained
+       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime win-x86 --output ./publish/win-x86-self --self-contained
+       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime win-x64 --output ./publish/win-x64 --no-self-contained
+       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime win-x64 --output ./publish/win-x64-self --self-contained
+       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime linux-x64 --output ./publish/linux-x64 --no-self-contained
+       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime linux-x64 --output ./publish/linux-x64-self --self-contained
+       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime linux-arm --output ./publish/linux-arm --no-self-contained
+       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime linux-arm --output ./publish/linux-arm-self --self-contained
+       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime osx-x64 --output ./publish/osx-x64 --no-self-contained
+       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime osx-x64 --output ./publish/osx-x64-self --self-contained

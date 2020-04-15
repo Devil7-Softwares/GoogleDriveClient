@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include=".circleci\config.yml" Link="config.yml"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Google.Apis.Drive.v3" Version="1.44.1.1888" />
     <PackageReference Include="MimeMapping" Version="1.0.1.26" />
     <PackageReference Include="Terminal.Gui" Version="0.70.0" />
