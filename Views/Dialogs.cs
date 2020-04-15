@@ -60,6 +60,7 @@ namespace Devil7.Utils.GDriveCLI.Views
             if (dialogResult == 0)
             {
                 Application.Top.Running = false;
+                Application.Driver.End();
             }
             else
             {
