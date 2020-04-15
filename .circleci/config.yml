@@ -7,6 +7,7 @@
     
      steps:
        - checkout
+       - run: envsubst < Utils/Secrets.ci.cs > Utils/Secrets.cs
        - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime win-x86 --output ./publish/win-x86 --no-self-contained
        - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime win-x86 --output ./publish/win-x86-self --self-contained
        - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime win-x64 --output ./publish/win-x64 --no-self-contained
