@@ -12,8 +12,10 @@ namespace Devil7.Utils.GDriveCLI.Views
 
         #region Properties
         public static Models.FileListItem CurrentDirectory { get; private set; }
-        public static List<Models.FileListItem> Files { get => ((DataSources.FileListDataSource)ListView.Source).Items; }
         public static Window Window { get; private set; }
+
+        public static List<Models.FileListItem> Files { get => ListView.Source is DataSources.FileListDataSource ? ((DataSources.FileListDataSource)ListView.Source).Items : null; }
+        public static Models.FileListItem SelectedItem { get => Files == null || ListView.SelectedItem < 0 || ListView.SelectedItem >= Files.Count ? null : Files[ListView.SelectedItem]; }
 
         private static Controls.CustomListView ListView { get; set; }
         #endregion
@@ -103,30 +105,31 @@ namespace Devil7.Utils.GDriveCLI.Views
         #region Event Handlers
         private static void ListView_OnKeyPressed(object sender, Controls.KeyPressedEventArgs args)
         {
+            if (SelectedItem == null)
+                return;
+
             if (args.KeyEvent.Key == Key.Enter)
             {
-                if (sender is ListView listView && listView.SelectedItem >= 0)
+                if (SelectedItem.IsDirectory)
                 {
-                    if (listView.Source is DataSources.FileListDataSource dataSource)
+                    if (SelectedItem.Name == "..")
                     {
-                        Models.FileListItem selectedItem = dataSource.Items[listView.SelectedItem];
-                        if (selectedItem.IsDirectory)
-                        {
-                            if (selectedItem.Name == "..")
-                            {
-                                ChangeDirectory(Routes.Pop(), Utils.Direction.Backward);
-                            }
-                            else
-                            {
-                                ChangeDirectory(selectedItem, Utils.Direction.Forward);
-                            }
-                        }
-                        else
-                        {
-                            DownloadFile.Start(selectedItem);
-                        }
+                        ChangeDirectory(Routes.Pop(), Utils.Direction.Backward);
+                    }
+                    else
+                    {
+                        ChangeDirectory(SelectedItem, Utils.Direction.Forward);
                     }
                 }
+                else
+                {
+                    DownloadFile.Start(SelectedItem);
+                }
+            }
+            else if (args.KeyEvent.Key == Key.DeleteChar)
+            {
+                /// TODO: Implement Permenent Delete on Shift+Delete
+                Dialogs.MoveToTrash();
             }
         }
         #endregion
