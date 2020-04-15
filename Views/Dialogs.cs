@@ -1,11 +1,74 @@
-﻿using Google.Apis.Drive.v3.Data;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Terminal.Gui;
 
 namespace Devil7.Utils.GDriveCLI.Views
 {
     class Dialogs
     {
+        public static void Delete()
+        {
+            int result = MessageBox.Query(50, 7, "Warning!", string.Format("Are you sure? Do you want to permanently delete selected {0}?", MyDrive.SelectedItem.IsDirectory ? "directory" : "file"), "Yes", "No");
+
+            switch (result)
+            {
+                case 0:
+                    Utils.Drive.Delete(MyDrive.SelectedItem.Id).ContinueWith((task) =>
+                    {
+                        if (task.Result)
+                        {
+                            Application.MainLoop.Invoke(() =>
+                            {
+                                var selectedItemIndex = MyDrive.Files.IndexOf(MyDrive.SelectedItem);
+
+                                if (selectedItemIndex == (MyDrive.Files.Count - 1))
+                                    MyDrive.SelectItem(MyDrive.Files[selectedItemIndex - 1]);
+
+                                MyDrive.Files.Remove(MyDrive.SelectedItem);
+
+                                Application.Top.SetFocus(MyDrive.Window);
+                                Application.Refresh();
+                            });
+                        }
+                    });
+                    break;
+                case 1:
+                    Application.Top.SetFocus(MyDrive.Window);
+                    break;
+            }
+        }
+
+        public static void MoveToTrash()
+        {
+            int result = MessageBox.Query(50, 7, "Warning!", string.Format("Are you sure? Do you want to move selected {0} to Trash?", MyDrive.SelectedItem.IsDirectory ? "directory" : "file"), "Yes", "No");
+
+            switch (result)
+            {
+                case 0:
+                    Utils.Drive.MoveToTrash(MyDrive.SelectedItem.Id).ContinueWith((task) =>
+                    {
+                        if (task.Result)
+                        {
+                            Application.MainLoop.Invoke(() =>
+                            {
+                                var selectedItemIndex = MyDrive.Files.IndexOf(MyDrive.SelectedItem);
+
+                                if (selectedItemIndex == (MyDrive.Files.Count - 1))
+                                    MyDrive.SelectItem(MyDrive.Files[selectedItemIndex - 1]);
+
+                                MyDrive.Files.Remove(MyDrive.SelectedItem);
+
+                                Application.Top.SetFocus(MyDrive.Window);
+                                Application.Refresh();
+                            });
+                        }
+                    });
+                    break;
+                case 1:
+                    Application.Top.SetFocus(MyDrive.Window);
+                    break;
+            }
+        }
+
         public static void NewFolder()
         {
             string newFolderName = "New Folder";
