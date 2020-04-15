@@ -177,6 +177,18 @@ namespace Devil7.Utils.GDriveCLI.Utils
 
             return uploadRequest;
         }
+
+        public static FilesResource.GetRequest StartDownload(string id, System.IO.FileStream fileStream, CancellationToken cancellationToken)
+        {
+            FilesResource.GetRequest downlodRequest = new FilesResource.GetRequest(Service, id);
+
+            downlodRequest.MediaDownloader.ChunkSize = ResumableUpload.MinimumChunkSize;
+
+            downlodRequest.DownloadAsync(fileStream, cancellationToken);
+
+            return downlodRequest;
+
+        }
         #endregion
     }
 }
