@@ -122,6 +122,10 @@ namespace Devil7.Utils.GDriveCLI.Views
                                 ChangeDirectory(selectedItem, Utils.Direction.Forward);
                             }
                         }
+                        else
+                        {
+                            DownloadFile.Start(selectedItem);
+                        }
                     }
                 }
             }
