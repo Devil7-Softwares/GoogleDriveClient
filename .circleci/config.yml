@@ -32,3 +32,4 @@
        - run: tar -cvzf ./publish/google-drive-client_linux-arm_self-contained.tar.gz -C ./publish/linux-arm-self .
        - run: tar -cvzf ./publish/google-drive-client_osx-x64.tar.gz -C ./publish/osx-x64 .
        - run: tar -cvzf ./publish/google-drive-client_osx-x64_self-contained.tar.gz -C ./publish/osx-x64-self .
+       - run: bash ./git-release.sh
