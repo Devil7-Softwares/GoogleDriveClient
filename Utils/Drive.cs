@@ -187,8 +187,57 @@ namespace Devil7.Utils.GDriveCLI.Utils
             downlodRequest.DownloadAsync(fileStream, cancellationToken);
 
             return downlodRequest;
-
         }
+
+        public static Task<bool> MoveToTrash(string id)
+        {
+            return Task.Run(() =>
+            {
+                bool success = false;
+
+                try
+                {
+                    File file = new File()
+                    {
+                        Trashed = true
+                    };
+
+                    FilesResource.UpdateRequest deleteRequest = Service.Files.Update(file, id);
+                    deleteRequest.Fields =  "id, name, trashed";
+
+                    File r = deleteRequest.Execute();
+
+                    success = r.Trashed.GetValueOrDefault();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+
+                return success;
+            });
+        }
+
+        public static Task<bool> Delete(string id)
+        {
+            return Task.Run(() =>
+            {
+                bool success = false;
+
+                try
+                {                    
+                    FilesResource.DeleteRequest deleteRequest = Service.Files.Delete( id);
+                    success = deleteRequest.Execute() == "";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+
+                return success;
+            });
+        }
+
         #endregion
     }
 }
