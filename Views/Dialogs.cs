@@ -39,6 +39,7 @@ namespace Devil7.Utils.GDriveCLI.Views
                         MyDrive.SelectItem(task.Result);
 
                         dialog.Running = false;
+                        Application.Top.SetFocus(MyDrive.Window);
                     });
                 });
             };
@@ -46,6 +47,7 @@ namespace Devil7.Utils.GDriveCLI.Views
             btnCancel.Clicked = delegate ()
             {
                 dialog.Running = false;
+                Application.Top.SetFocus(MyDrive.Window);
             };
             dialog.AddButton(btnOk);
             dialog.AddButton(btnCancel);
@@ -83,11 +85,13 @@ namespace Devil7.Utils.GDriveCLI.Views
                 MyDrive.SortItems();
 
                 dialog.Running = false;
+                Application.Top.SetFocus(MyDrive.Window);
             };
             Button btnCancel = new Button("Cancel");
             btnCancel.Clicked = delegate ()
             {
                 dialog.Running = false;
+                Application.Top.SetFocus(MyDrive.Window);
             };
             dialog.AddButton(btnOk);
             dialog.AddButton(btnCancel);
@@ -111,11 +115,13 @@ namespace Devil7.Utils.GDriveCLI.Views
                 MyDrive.SortItems();
 
                 dialog.Running = false;
+                Application.Top.SetFocus(MyDrive.Window);
             };
             Button btnCancel = new Button("Cancel");
             btnCancel.Clicked = delegate ()
             {
                 dialog.Running = false;
+                Application.Top.SetFocus(MyDrive.Window);
             };
             dialog.AddButton(btnOk);
             dialog.AddButton(btnCancel);
