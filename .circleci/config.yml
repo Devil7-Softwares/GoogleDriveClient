@@ -3,7 +3,9 @@
  jobs:
    build:
      docker: 
-       - image: mcr.microsoft.com/dotnet/core/sdk:5.0-focal 
+       - image: mcr.microsoft.com/dotnet/core/sdk:5.0-focal
+     environment:
+       GZIP: -9
     
      steps:
        - checkout
@@ -20,3 +22,13 @@
        - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime linux-arm --output ./publish/linux-arm-self --self-contained
        - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime osx-x64 --output ./publish/osx-x64 --no-self-contained
        - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime osx-x64 --output ./publish/osx-x64-self --self-contained
+       - run: zip -j9 ./publish/google-drive-client_win-x86.zip ./publish/win-x86/*
+       - run: zip -j9 ./publish/google-drive-client_win-x86_self-contained.zip ./publish/win-x86-self/*
+       - run: zip -j9 ./publish/google-drive-client_win-x64.zip ./publish/win-x64/*
+       - run: zip -j9 ./publish/google-drive-client_win-x64_self-contained.zip ./publish/win-x64-self/*
+       - run: tar -cvzf ./publish/google-drive-client_linux-x64.tar.gz -C ./publish/linux-x64 .
+       - run: tar -cvzf ./publish/google-drive-client_linux-x64_self-contained.tar.gz -C ./publish/linux-x64-self .
+       - run: tar -cvzf ./publish/google-drive-client_linux-arm.tar.gz -C ./publish/linux-arm .
+       - run: tar -cvzf ./publish/google-drive-client_linux-arm_self-contained.tar.gz -C ./publish/linux-arm-self .
+       - run: tar -cvzf ./publish/google-drive-client_osx-x64.tar.gz -C ./publish/osx-x64 .
+       - run: tar -cvzf ./publish/google-drive-client_osx-x64_self-contained.tar.gz -C ./publish/osx-x64-self .
