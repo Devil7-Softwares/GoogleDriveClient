@@ -7,6 +7,8 @@
     
      steps:
        - checkout
+       - run: apt-get update
+       - run: apt-get install -y gettext-base
        - run: envsubst < Utils/Secrets.ci.cs > Utils/Secrets.cs
        - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime win-x86 --output ./publish/win-x86 --no-self-contained
        - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime win-x86 --output ./publish/win-x86-self --self-contained
