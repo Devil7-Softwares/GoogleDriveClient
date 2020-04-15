@@ -28,15 +28,19 @@ namespace Devil7.Utils.GDriveCLI.Views
             Button btnOk = new Button("OK", true);
             btnOk.Clicked = delegate ()
             {
-                Models.FileListItem newFolder = Utils.Drive.NewFolder(MyDrive.CurrentDirectory.Id, textField.Text.ToString()).Result;
-                MyDrive.Files.Add(newFolder);
+                Utils.Drive.NewFolder(MyDrive.CurrentDirectory.Id, textField.Text.ToString()).ContinueWith((task) =>
+                {
+                    Application.MainLoop.Invoke(() =>
+                    {
+                        MyDrive.Files.Add(task.Result);
 
-                MyDrive.UpdateDataSource();
+                        MyDrive.SortItems();
 
-                MyDrive.SelectItem(newFolder);
+                        MyDrive.SelectItem(task.Result);
 
-                MyDrive.Window.ChildNeedsDisplay();
-                dialog.Running = false;
+                        dialog.Running = false;
+                    });
+                });
             };
             Button btnCancel = new Button("Cancel");
             btnCancel.Clicked = delegate ()
@@ -75,7 +79,7 @@ namespace Devil7.Utils.GDriveCLI.Views
                 Utils.Settings.SortBy = (Utils.SortBy)radioGroup.Selected;
                 Utils.Settings.Save();
 
-                MyDrive.UpdateDataSource();
+                MyDrive.SortItems();
 
                 dialog.Running = false;
             };
@@ -103,7 +107,7 @@ namespace Devil7.Utils.GDriveCLI.Views
                 Utils.Settings.SortOrder = (Utils.SortOrder)radioGroup.Selected;
                 Utils.Settings.Save();
 
-                MyDrive.UpdateDataSource();
+                MyDrive.SortItems();
 
                 dialog.Running = false;
             };

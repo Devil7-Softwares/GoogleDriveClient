@@ -1,5 +1,4 @@
-﻿using Devil7.Utils.GDriveCLI.Models;
-using Google.Apis.Drive.v3;
+﻿using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
 using Google.Apis.Upload;
 using System;
@@ -113,15 +112,17 @@ namespace Devil7.Utils.GDriveCLI.Views
             if (IsPaused)
             {
                 IsPaused = false;
-                PauseButton.Text = "Pause";
                 CancellationTokenSource = new CancellationTokenSource();
                 UploadRequest.ResumeAsync(CancellationTokenSource.Token);
+
+                Application.MainLoop.Invoke(() => PauseButton.Text = "Pause");
             }
             else
             {
                 IsPaused = true;
-                PauseButton.Text = "Resume";
                 CancellationTokenSource.Cancel();
+
+                Application.MainLoop.Invoke(() => PauseButton.Text = "Resume");
             }
         }
 
@@ -129,27 +130,28 @@ namespace Devil7.Utils.GDriveCLI.Views
         {
             if (Status != UploadStatus.Completed && Status != UploadStatus.Failed &&
                 CancellationTokenSource != null && !CancellationTokenSource.IsCancellationRequested) CancellationTokenSource.Cancel();
-            if (ProgressDialog != null && ProgressDialog.Running) ProgressDialog.Running = false;
 
             if (FileStream != null) FileStream.Close();
 
-            Application.Top.SetFocus(MyDrive.Window);
-
-            if (Status == UploadStatus.Completed)
+            Application.MainLoop.Invoke(() =>
             {
-                FileListItem listItem = Utils.Misc.FileToItem(UploadedFile);
-                MyDrive.Files.Add(listItem);
+                if (ProgressDialog != null && ProgressDialog.Running) ProgressDialog.Running = false;
 
-                MyDrive.UpdateDataSource();
-                MyDrive.SelectItem(listItem);
-            }
+                if (Status == UploadStatus.Completed)
+                {
+                    Models.FileListItem listItem = Utils.Misc.FileToItem(UploadedFile);
+                    MyDrive.Files.Add(listItem);
 
-            Application.Refresh();
+                    MyDrive.SortItems();
+                    MyDrive.SelectItem(listItem);
+                }
+            });
         }
 
         private static void UpdateStatus()
         {
             string statusText = "Status Unknown";
+            float progress = ((float)UploadedSize / (float)TotalSize);
             switch (Status)
             {
                 case UploadStatus.NotStarted:
@@ -159,16 +161,18 @@ namespace Devil7.Utils.GDriveCLI.Views
                     statusText = "Starting...";
                     break;
                 case UploadStatus.Uploading:
-                    float progress = ((float)UploadedSize / (float)TotalSize);
-                    ProgressBar.Fraction = progress;
                     statusText = string.Format("Uploading {2:0}% ({0} of {1})", Utils.Misc.BytesToString(UploadedSize), Utils.Misc.BytesToString(TotalSize), (progress * 100));
                     break;
                 case UploadStatus.Failed:
                     if (IsPaused) statusText = string.Format("Paused at {2:0}% ({0} of {1})", Utils.Misc.BytesToString(UploadedSize), Utils.Misc.BytesToString(TotalSize), (((float)UploadedSize / (float)TotalSize) * 100));
                     break;
             }
-            StatusLabel.Text = statusText;
-            Application.Refresh();
+
+            Application.MainLoop.Invoke(() =>
+            {
+                ProgressBar.Fraction = progress;
+                StatusLabel.Text = statusText;
+            });
         }
         #endregion
 
@@ -182,17 +186,24 @@ namespace Devil7.Utils.GDriveCLI.Views
                     break;
                 case UploadStatus.Completed:
                     _Status = UploadStatus.Completed;
-                    MessageBox.Query(50, 7, "Done", "Upload completed successfully", "Ok");
-                    Cancel();
+
+                    Application.MainLoop.Invoke(() =>
+                    {
+                        MessageBox.Query(50, 7, "Done", "Upload completed successfully", "Ok");
+                        Cancel();
+                    });
                     break;
                 case UploadStatus.Failed:
                     if (!IsPaused)
                     {
-                        if (e.Exception != null)
-                            MessageBox.ErrorQuery(50, 7, "Error", "Upload failed! " + e.Exception.Message, "Ok");
-                        else
-                            MessageBox.ErrorQuery(50, 7, "Error", "Upload failed due to unknown reason!", "Ok");
-                        Cancel();
+                        Application.MainLoop.Invoke(() =>
+                        {
+                            if (e.Exception != null)
+                                MessageBox.ErrorQuery(50, 7, "Error", "Upload failed! " + e.Exception.Message, "Ok");
+                            else
+                                MessageBox.ErrorQuery(50, 7, "Error", "Upload failed due to unknown reason!", "Ok");
+                            Cancel();
+                        });
                     }
                     break;
                 case UploadStatus.NotStarted:

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Terminal.Gui;
 
 namespace Devil7.Utils.GDriveCLI.Views
@@ -13,7 +12,7 @@ namespace Devil7.Utils.GDriveCLI.Views
 
         #region Properties
         public static Models.FileListItem CurrentDirectory { get; private set; }
-        public static List<Models.FileListItem> Files { get; private set; }
+        public static List<Models.FileListItem> Files { get => ((DataSources.FileListDataSource)ListView.Source).Items; }
         public static Window Window { get; private set; }
 
         private static Controls.CustomListView ListView { get; set; }
@@ -35,13 +34,10 @@ namespace Devil7.Utils.GDriveCLI.Views
             CreateListView();
         }
 
-        public static void UpdateDataSource()
+        public static void SortItems()
         {
-            DataSources.FileListDataSource ds = new DataSources.FileListDataSource(Files);
+            DataSources.FileListDataSource ds = (DataSources.FileListDataSource)ListView.Source;
             ds.Sort();
-
-            ListView.Source = ds;
-            Files = ds.Items;
         }
 
         public static void SelectItem(Models.FileListItem item)
@@ -72,31 +68,34 @@ namespace Devil7.Utils.GDriveCLI.Views
 
         private static void ChangeDirectory(Models.FileListItem currentItem, Utils.Direction direction)
         {
-            Task.Run(delegate ()
-            {
-                Files = Utils.Drive.ListFiles(currentItem.Id).Result;
 
-                if (currentItem.Id == "root")
+            Utils.Drive.ListFiles(currentItem.Id).ContinueWith((task) =>
+            {
+                Application.MainLoop.Invoke(() =>
                 {
-                    Routes.Clear();
-                }
-                else
-                {
-                    if (direction == Utils.Direction.Forward)
+                    DataSources.FileListDataSource ds = new DataSources.FileListDataSource(task.Result);
+                    ds.Sort();
+
+                    ListView.Source = ds;
+
+                    if (currentItem.Id == "root")
                     {
-                        Routes.Push(CurrentDirectory);
+                        Routes.Clear();
+                    }
+                    else
+                    {
+                        if (direction == Utils.Direction.Forward)
+                        {
+                            Routes.Push(CurrentDirectory);
+                        }
+
+                        Files.Insert(0, new Models.FileListItem("", "..", "", DateTime.Now, 0, Utils.Constants.MIME_GDRIVE_DIRECTORY));
                     }
 
-                    Files.Insert(0, new Models.FileListItem("", "..", "", DateTime.Now, 0, Utils.Constants.MIME_GDRIVE_DIRECTORY));
-                }
+                    Window.Title = currentItem.Name;
 
-                UpdateDataSource();
-
-                Window.Title = currentItem.Name;
-
-                Application.Refresh();
-
-                CurrentDirectory = currentItem;
+                    CurrentDirectory = currentItem;
+                });
             });
         }
         #endregion

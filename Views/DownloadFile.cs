@@ -134,7 +134,6 @@ namespace Devil7.Utils.GDriveCLI.Views
         {
             if (Status != DownloadStatus.Completed && Status != DownloadStatus.Failed &&
                 CancellationTokenSource != null && !CancellationTokenSource.IsCancellationRequested) CancellationTokenSource.Cancel();
-            if (ProgressDialog != null && ProgressDialog.Running) ProgressDialog.Running = false;
 
             if (FileStream != null) FileStream.Close();
 
@@ -143,28 +142,34 @@ namespace Devil7.Utils.GDriveCLI.Views
                 DownloadedFileInfo.LastWriteTime = SelectedItem.LastModified;
             }
 
-            Application.Refresh();
+            Application.MainLoop.Invoke(() =>
+            {
+                if (ProgressDialog != null && ProgressDialog.Running) ProgressDialog.Running = false;
+            });
         }
 
         private static void UpdateStatus()
         {
             string statusText = "Status Unknown";
+            float progress = ((float)DownloadedSize / (float)TotalSize);
             switch (Status)
             {
                 case DownloadStatus.NotStarted:
                     statusText = "Waiting for start...";
                     break;
                 case DownloadStatus.Downloading:
-                    float progress = ((float)DownloadedSize / (float)TotalSize);
-                    ProgressBar.Fraction = progress;
                     statusText = string.Format("Downloading {2:0}% ({0} of {1})", Utils.Misc.BytesToString(DownloadedSize), Utils.Misc.BytesToString(TotalSize), (progress * 100));
                     break;
                 default:
                     statusText = "Starting...";
                     break;
             }
-            StatusLabel.Text = statusText;
-            Application.Refresh();
+
+            Application.MainLoop.Invoke(() =>
+            {
+                ProgressBar.Fraction = progress;
+                StatusLabel.Text = statusText;
+            });
         }
         #endregion
 
@@ -178,15 +183,21 @@ namespace Devil7.Utils.GDriveCLI.Views
                     break;
                 case DownloadStatus.Completed:
                     _Status = DownloadStatus.Completed;
-                    MessageBox.Query(50, 7, "Done", "Download completed successfully", "Ok");
-                    Cancel();
+                    Application.MainLoop.Invoke(() =>
+                    {
+                        MessageBox.Query(50, 7, "Done", "Download completed successfully", "Ok");
+                        Cancel();
+                    });
                     break;
                 case DownloadStatus.Failed:
-                    if (e.Exception != null)
-                        MessageBox.ErrorQuery(50, 7, "Error", "Download failed! " + e.Exception.Message, "Ok");
-                    else
-                        MessageBox.ErrorQuery(50, 7, "Error", "Download failed due to unknown reason!", "Ok");
-                    Cancel();
+                    Application.MainLoop.Invoke(() =>
+                    {
+                        if (e.Exception != null)
+                            MessageBox.ErrorQuery(50, 7, "Error", "Download failed! " + e.Exception.Message, "Ok");
+                        else
+                            MessageBox.ErrorQuery(50, 7, "Error", "Download failed due to unknown reason!", "Ok");
+                        Cancel();
+                    });
                     break;
                 case DownloadStatus.NotStarted:
                     Console.WriteLine("DownloadFile: Download not started yet!");
