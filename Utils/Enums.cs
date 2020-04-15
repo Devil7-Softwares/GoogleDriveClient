@@ -1,4 +1,4 @@
-﻿namespace Devil7.Utils.GDriveCLI.Utils
+﻿namespace Devil7.Utils.GoogleDriveClient.Utils
 {
     public enum Direction : byte
     {

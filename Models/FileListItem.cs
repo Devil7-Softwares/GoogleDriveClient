@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Devil7.Utils.GDriveCLI.Models
+namespace Devil7.Utils.GoogleDriveClient.Models
 {
     public class FileListItem
     {

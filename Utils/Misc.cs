@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Devil7.Utils.GDriveCLI.Utils
+namespace Devil7.Utils.GoogleDriveClient.Utils
 {
     public class Misc
     {

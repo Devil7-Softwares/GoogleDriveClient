@@ -5,7 +5,7 @@ using System.Threading;
 using Terminal.Gui;
 using System.Text.RegularExpressions;
 
-namespace Devil7.Utils.GDriveCLI.Views
+namespace Devil7.Utils.GoogleDriveClient.Views
 {
     class DownloadFile
     {

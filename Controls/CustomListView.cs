@@ -1,7 +1,7 @@
 ﻿using System;
 using Terminal.Gui;
 
-namespace Devil7.Utils.GDriveCLI.Controls
+namespace Devil7.Utils.GoogleDriveClient.Controls
 {
     public class CustomListView : ListView
     {

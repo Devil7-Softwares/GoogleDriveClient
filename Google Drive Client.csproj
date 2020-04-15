@@ -3,9 +3,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp5.0</TargetFramework>
-    <RootNamespace>Devil7.Utils.GDriveCLI</RootNamespace>
+    <RootNamespace>Devil7.Utils.GoogleDriveClient</RootNamespace>
     <AssemblyName>gdrive</AssemblyName>
-    <StartupObject>Devil7.Utils.GDriveCLI.Program</StartupObject>
+    <StartupObject>Devil7.Utils.GoogleDriveClient.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

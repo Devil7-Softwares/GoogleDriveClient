@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Devil7.Utils.GDriveCLI.Utils
+namespace Devil7.Utils.GoogleDriveClient.Utils
 {
     class FileListItemComparer : IComparer<Models.FileListItem>
     {

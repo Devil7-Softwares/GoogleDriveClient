@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Terminal.Gui;
 
-namespace Devil7.Utils.GDriveCLI.DataSources
+namespace Devil7.Utils.GoogleDriveClient.DataSources
 {
     public class FileListDataSource : IListDataSource
     {

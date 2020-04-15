@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Terminal.Gui;
 
-namespace Devil7.Utils.GDriveCLI.Views
+namespace Devil7.Utils.GoogleDriveClient.Views
 {
     class Dialogs
     {

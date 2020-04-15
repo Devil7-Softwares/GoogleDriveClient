@@ -7,12 +7,12 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Devil7.Utils.GDriveCLI.Utils
+namespace Devil7.Utils.GoogleDriveClient.Utils
 {
     public class Settings
     {
         #region Variables
-        private static readonly string SettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Devil7.Utils.GDriveCLI.json");
+        private static readonly string SettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Devil7.Utils.GoogleDriveClient.json");
         #endregion
 
         #region Properties

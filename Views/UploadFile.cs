@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using Terminal.Gui;
 
-namespace Devil7.Utils.GDriveCLI.Views
+namespace Devil7.Utils.GoogleDriveClient.Views
 {
     class UploadFile
     {

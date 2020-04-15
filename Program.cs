@@ -1,7 +1,7 @@
 ﻿using System;
 using Terminal.Gui;
 
-namespace Devil7.Utils.GDriveCLI
+namespace Devil7.Utils.GoogleDriveClient
 {
     class Program
     {
