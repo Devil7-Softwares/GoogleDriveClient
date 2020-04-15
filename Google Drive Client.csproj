@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -9,7 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include=".circleci\config.yml" Link="config.yml"/>
+    <Compile Remove="Utils\Secrets.ci.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".circleci\config.yml" Link="config.yml" />
   </ItemGroup>
 
   <ItemGroup>
