@@ -59,9 +59,10 @@ namespace Devil7.Utils.GoogleDriveClient.Views
                 Height = Dim.Fill(1),
                 X = 0,
                 Y = 0,
-                AllowsMarking = true
+                AllowsMarking = true,
             };
             ListView.OnKeyPressed += ListView_OnKeyPressed;
+            ListView.OpenSelectedItem += ListView_OpenSelectedItem;
 
             Window.Add(ListView);
 
@@ -100,6 +101,25 @@ namespace Devil7.Utils.GoogleDriveClient.Views
                 });
             });
         }
+
+        private static void OpenItem()
+        {
+            if (SelectedItem.IsDirectory)
+            {
+                if (SelectedItem.Name == "..")
+                {
+                    ChangeDirectory(Routes.Pop(), Utils.Direction.Backward);
+                }
+                else
+                {
+                    ChangeDirectory(SelectedItem, Utils.Direction.Forward);
+                }
+            }
+            else
+            {
+                DownloadFile.Start(SelectedItem);
+            }
+        }
         #endregion
 
         #region Event Handlers
@@ -108,29 +128,19 @@ namespace Devil7.Utils.GoogleDriveClient.Views
             if (SelectedItem == null)
                 return;
 
-            if (args.KeyEvent.Key == Key.Enter)
-            {
-                if (SelectedItem.IsDirectory)
-                {
-                    if (SelectedItem.Name == "..")
-                    {
-                        ChangeDirectory(Routes.Pop(), Utils.Direction.Backward);
-                    }
-                    else
-                    {
-                        ChangeDirectory(SelectedItem, Utils.Direction.Forward);
-                    }
-                }
-                else
-                {
-                    DownloadFile.Start(SelectedItem);
-                }
-            }
-            else if (args.KeyEvent.Key == Key.DeleteChar)
+            if (args.KeyEvent.Key == Key.DeleteChar)
             {
                 /// TODO: Implement Permenent Delete on Shift+Delete
                 Dialogs.MoveToTrash();
             }
+        }
+
+        private static void ListView_OpenSelectedItem(ListViewItemEventArgs args)
+        {
+            if (SelectedItem == null)
+                return;
+
+            OpenItem();
         }
         #endregion
     }

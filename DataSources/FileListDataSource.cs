@@ -1,5 +1,6 @@
 ﻿using NStack;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Terminal.Gui;
@@ -12,6 +13,8 @@ namespace Devil7.Utils.GoogleDriveClient.DataSources
         public int Count { get => Items.Count; }
 
         public List<Models.FileListItem> Items { get; private set; }
+
+        public int Length { get => Items.Count; }
         #endregion
 
         #region Constructor
@@ -39,7 +42,12 @@ namespace Devil7.Utils.GoogleDriveClient.DataSources
                 item.IsSelected = value;
         }
 
-        public void Render(ListView container, ConsoleDriver driver, bool selected, int index, int col, int line, int width)
+        public IList ToList()
+        {
+            return this.Items;
+        }
+
+        public void Render(ListView container, ConsoleDriver driver, bool selected, int index, int col, int line, int width, int start)
         {
             var text = "";
             Models.FileListItem item = Items[index];
@@ -70,6 +78,7 @@ namespace Devil7.Utils.GoogleDriveClient.DataSources
             }
 
             RenderUstr(driver, text, width);
+
         }
         #endregion
 

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using NStack;
 using Terminal.Gui;
 
 namespace Devil7.Utils.GoogleDriveClient.Views
@@ -25,14 +25,14 @@ namespace Devil7.Utils.GoogleDriveClient.Views
 
                                 MyDrive.Files.Remove(MyDrive.SelectedItem);
 
-                                Application.Top.SetFocus(MyDrive.Window);
+                                MyDrive.Window.SetFocus();
                                 Application.Refresh();
                             });
                         }
                     });
                     break;
                 case 1:
-                    Application.Top.SetFocus(MyDrive.Window);
+                    MyDrive.Window.SetFocus();
                     break;
             }
         }
@@ -57,14 +57,14 @@ namespace Devil7.Utils.GoogleDriveClient.Views
 
                                 MyDrive.Files.Remove(MyDrive.SelectedItem);
 
-                                Application.Top.SetFocus(MyDrive.Window);
+                                MyDrive.Window.SetFocus();
                                 Application.Refresh();
                             });
                         }
                     });
                     break;
                 case 1:
-                    Application.Top.SetFocus(MyDrive.Window);
+                    MyDrive.Window.SetFocus();
                     break;
             }
         }
@@ -89,7 +89,7 @@ namespace Devil7.Utils.GoogleDriveClient.Views
             dialog.Add(textField);
 
             Button btnOk = new Button("OK", true);
-            btnOk.Clicked = delegate ()
+            btnOk.Clicked += delegate ()
             {
                 Utils.Drive.NewFolder(MyDrive.CurrentDirectory.Id, textField.Text.ToString()).ContinueWith((task) =>
                 {
@@ -102,15 +102,15 @@ namespace Devil7.Utils.GoogleDriveClient.Views
                         MyDrive.SelectItem(task.Result);
 
                         dialog.Running = false;
-                        Application.Top.SetFocus(MyDrive.Window);
+                        MyDrive.Window.SetFocus();
                     });
                 });
             };
             Button btnCancel = new Button("Cancel");
-            btnCancel.Clicked = delegate ()
+            btnCancel.Clicked += delegate ()
             {
                 dialog.Running = false;
-                Application.Top.SetFocus(MyDrive.Window);
+                MyDrive.Window.SetFocus();
             };
             dialog.AddButton(btnOk);
             dialog.AddButton(btnCancel);
@@ -124,37 +124,36 @@ namespace Devil7.Utils.GoogleDriveClient.Views
             int dialogResult = MessageBox.Query(50, 7, "Quit", "Are you sure you want to quit?", "Yes", "No");
             if (dialogResult == 0)
             {
-                Application.Top.Running = false;
-                Application.Driver.End();
+                Application.RequestStop();
             }
             else
             {
-                Application.Top.SetFocus(MyDrive.Window);
+                MyDrive.Window.SetFocus();
             }
         }
 
         public static void SortBy()
         {
             Dialog dialog = new Dialog("Sort By", 25, 10);
-            RadioGroup radioGroup = new RadioGroup(5, 1, new string[] { "Name", "Date" }, (int)Utils.Settings.SortBy);
+            RadioGroup radioGroup = new RadioGroup(5, 1, new ustring[] { "Name", "Date" }, (int)Utils.Settings.SortBy);
             dialog.Add(radioGroup);
 
             Button btnOk = new Button("OK", true);
-            btnOk.Clicked = delegate ()
+            btnOk.Clicked += delegate ()
             {
-                Utils.Settings.SortBy = (Utils.SortBy)radioGroup.Selected;
+                Utils.Settings.SortBy = (Utils.SortBy)radioGroup.SelectedItem;
                 Utils.Settings.Save();
 
                 MyDrive.SortItems();
 
                 dialog.Running = false;
-                Application.Top.SetFocus(MyDrive.Window);
+                MyDrive.Window.SetFocus();
             };
             Button btnCancel = new Button("Cancel");
-            btnCancel.Clicked = delegate ()
+            btnCancel.Clicked += delegate ()
             {
                 dialog.Running = false;
-                Application.Top.SetFocus(MyDrive.Window);
+                MyDrive.Window.SetFocus();
             };
             dialog.AddButton(btnOk);
             dialog.AddButton(btnCancel);
@@ -166,25 +165,25 @@ namespace Devil7.Utils.GoogleDriveClient.Views
         public static void SortOrder()
         {
             Dialog dialog = new Dialog("Sort By", 25, 10);
-            RadioGroup radioGroup = new RadioGroup(3, 1, new string[] { "Ascending", "Descending" }, (int)Utils.Settings.SortOrder);
+            RadioGroup radioGroup = new RadioGroup(3, 1, new ustring[] { "Ascending", "Descending" }, (int)Utils.Settings.SortOrder);
             dialog.Add(radioGroup);
 
             Button btnOk = new Button("OK", true);
-            btnOk.Clicked = delegate ()
+            btnOk.Clicked += delegate ()
             {
-                Utils.Settings.SortOrder = (Utils.SortOrder)radioGroup.Selected;
+                Utils.Settings.SortOrder = (Utils.SortOrder)radioGroup.SelectedItem;
                 Utils.Settings.Save();
 
                 MyDrive.SortItems();
 
                 dialog.Running = false;
-                Application.Top.SetFocus(MyDrive.Window);
+                MyDrive.Window.SetFocus();
             };
             Button btnCancel = new Button("Cancel");
-            btnCancel.Clicked = delegate ()
+            btnCancel.Clicked += delegate ()
             {
                 dialog.Running = false;
-                Application.Top.SetFocus(MyDrive.Window);
+                MyDrive.Window.SetFocus();
             };
             dialog.AddButton(btnOk);
             dialog.AddButton(btnCancel);
