@@ -17,7 +17,7 @@ namespace Devil7.Utils.GoogleDriveClient.Views
         private static FilesResource.CreateMediaUpload UploadRequest { get; set; }
         private static CancellationTokenSource CancellationTokenSource { get; set; }
         private static Dialog ProgressDialog { get; set; }
-        private static Label StatusLabel { get; set; }
+        private static Terminal.Gui.Label StatusLabel { get; set; }
         private static ProgressBar ProgressBar { get; set; }
         private static Button PauseButton { get; set; }
 
@@ -63,14 +63,14 @@ namespace Devil7.Utils.GoogleDriveClient.Views
 
                 ProgressDialog = new Dialog("Uploading File", 50, 10);
 
-                Label fileNameLabel = new Label(System.IO.Path.GetFileName(filePath))
+                Terminal.Gui.Label fileNameLabel = new Terminal.Gui.Label(System.IO.Path.GetFileName(filePath))
                 {
                     X = 1,
                     Y = 1
                 };
                 ProgressDialog.Add(fileNameLabel);
 
-                StatusLabel = new Label("Starting...")
+                StatusLabel = new Terminal.Gui.Label("Starting...")
                 {
                     X = 1,
                     Y = 2
