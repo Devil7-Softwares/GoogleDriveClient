@@ -5,6 +5,8 @@
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Devil7.Utils.GoogleDriveClient</RootNamespace>
     <AssemblyName>gdrive</AssemblyName>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <Version>1.0.0</Version>
     <StartupObject>Devil7.Utils.GoogleDriveClient.Program</StartupObject>
     <Authors>Dineshkumar T (Devil7DK)</Authors>
     <Company>Devil7 Softwares</Company>
