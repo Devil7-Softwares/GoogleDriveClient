@@ -6,8 +6,11 @@ using Google.Apis.Drive.v3.Data;
 using Google.Apis.Services;
 using Google.Apis.Upload;
 using Google.Apis.Util.Store;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,17 +46,43 @@ namespace Devil7.Utils.GoogleDriveClient.Utils
         public static bool Authorize()
         {
             Console.WriteLine("Authendication needed!");
-            Console.WriteLine("Go to the following url in your browser:");
-            Console.WriteLine(AuthFlow.CreateAuthorizationCodeRequest(Constants.URI_GDRIVE_REDIRECT).Build().ToString());
 
-            Console.WriteLine();
-            Console.WriteLine("Enter verification code: ");
+            string redirectUrl = string.Format("http://localhost:{0}/", Misc.GetRandomUnusedPort());
+            string token = "";
+            string url = AuthFlow.CreateAuthorizationCodeRequest(redirectUrl).Build().ToString();
 
-            string token = Console.ReadLine();
+            if (Misc.IsRunningInsideSSH())
+            {
+                Console.WriteLine("Looks like you are running inside an SSH connection. Cannot create a local redirect server.\nGo to the following url in your browser and copy, paste the token from redirected URL:");
+                Console.WriteLine(url);
+
+                Console.WriteLine();
+                Console.WriteLine("Enter verification code: ");
+
+                token = Console.ReadLine();
+            }
+            else
+            {
+                Console.WriteLine("Opening browser...");
+                Misc.LaunchURL(url);
+
+                Console.WriteLine("Waiting for redirect...");
+                using (CancellationTokenSource cts = new CancellationTokenSource())
+                {
+                    Task.Run(async delegate ()
+                    {
+                        await StartRedirectServer(redirectUrl, cts.Token, delegate (string code)
+                        {
+                            token = code;
+                            cts.Cancel();
+                        });
+                    }, cts.Token).Wait();
+                }
+            }
 
             try
             {
-                TokenResponse response = AuthFlow.ExchangeCodeForTokenAsync(Environment.UserName, token, Constants.URI_GDRIVE_REDIRECT, new CancellationToken()).Result;
+                TokenResponse response = AuthFlow.ExchangeCodeForTokenAsync(Environment.UserName, token, redirectUrl, new CancellationToken()).Result;
                 AuthFlow.DataStore.StoreAsync(Environment.UserName, response).Wait();
                 return true;
             }
@@ -203,7 +232,7 @@ namespace Devil7.Utils.GoogleDriveClient.Utils
                     };
 
                     FilesResource.UpdateRequest deleteRequest = Service.Files.Update(file, id);
-                    deleteRequest.Fields =  "id, name, trashed";
+                    deleteRequest.Fields = "id, name, trashed";
 
                     File r = deleteRequest.Execute();
 
@@ -225,8 +254,8 @@ namespace Devil7.Utils.GoogleDriveClient.Utils
                 bool success = false;
 
                 try
-                {                    
-                    FilesResource.DeleteRequest deleteRequest = Service.Files.Delete( id);
+                {
+                    FilesResource.DeleteRequest deleteRequest = Service.Files.Delete(id);
                     success = deleteRequest.Execute() == "";
                 }
                 catch (Exception ex)
@@ -238,6 +267,28 @@ namespace Devil7.Utils.GoogleDriveClient.Utils
             });
         }
 
+        #endregion
+
+        #region Private Functions
+        private static async Task StartRedirectServer(string url, CancellationToken cancellationToken, Action<string> callback)
+        {
+            var app = WebApplication.CreateBuilder().Build();
+
+            app.MapGet("/", async (context) =>
+            {
+                string code = context.Request.Query["code"].ToString();
+                await context.Response.Body.WriteAsync(Encoding.UTF8.GetBytes("Authendication successful! You can close this tab now."), cancellationToken);
+                await context.Response.CompleteAsync();
+                callback(code);
+            });
+
+            cancellationToken.Register(() =>
+            {
+                app.StopAsync().Wait();
+            });
+
+            await app.RunAsync(url);
+        }
         #endregion
     }
 }
