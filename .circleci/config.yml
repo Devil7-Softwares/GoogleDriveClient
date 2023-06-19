@@ -3,7 +3,7 @@
  jobs:
    build:
      docker: 
-       - image: mcr.microsoft.com/dotnet/core/sdk:5.0-focal
+       - image: mcr.microsoft.com/dotnet/core/sdk:7.0-focal
      environment:
        GZIP: -9
     
@@ -12,16 +12,16 @@
        - run: apt-get update
        - run: apt-get install -y gettext-base zip file
        - run: envsubst < Utils/Secrets.ci.cs > Utils/Secrets.cs
-       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime win-x86 --output ./publish/win-x86 --no-self-contained
-       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime win-x86 --output ./publish/win-x86-self --self-contained
-       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime win-x64 --output ./publish/win-x64 --no-self-contained
-       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime win-x64 --output ./publish/win-x64-self --self-contained
-       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime linux-x64 --output ./publish/linux-x64 --no-self-contained
-       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime linux-x64 --output ./publish/linux-x64-self --self-contained
-       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime linux-arm --output ./publish/linux-arm --no-self-contained
-       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime linux-arm --output ./publish/linux-arm-self --self-contained
-       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime osx-x64 --output ./publish/osx-x64 --no-self-contained
-       - run: dotnet publish --configuration Release --framework netcoreapp5.0 --runtime osx-x64 --output ./publish/osx-x64-self --self-contained
+       - run: dotnet publish --configuration Release --framework net7.0 --runtime win-x86 --output ./publish/win-x86 --no-self-contained
+       - run: dotnet publish --configuration Release --framework net7.0 --runtime win-x86 --output ./publish/win-x86-self --self-contained
+       - run: dotnet publish --configuration Release --framework net7.0 --runtime win-x64 --output ./publish/win-x64 --no-self-contained
+       - run: dotnet publish --configuration Release --framework net7.0 --runtime win-x64 --output ./publish/win-x64-self --self-contained
+       - run: dotnet publish --configuration Release --framework net7.0 --runtime linux-x64 --output ./publish/linux-x64 --no-self-contained
+       - run: dotnet publish --configuration Release --framework net7.0 --runtime linux-x64 --output ./publish/linux-x64-self --self-contained
+       - run: dotnet publish --configuration Release --framework net7.0 --runtime linux-arm --output ./publish/linux-arm --no-self-contained
+       - run: dotnet publish --configuration Release --framework net7.0 --runtime linux-arm --output ./publish/linux-arm-self --self-contained
+       - run: dotnet publish --configuration Release --framework net7.0 --runtime osx-x64 --output ./publish/osx-x64 --no-self-contained
+       - run: dotnet publish --configuration Release --framework net7.0 --runtime osx-x64 --output ./publish/osx-x64-self --self-contained
        - run: zip -j9 ./publish/google-drive-client_win-x86.zip ./publish/win-x86/*
        - run: zip -j9 ./publish/google-drive-client_win-x86_self-contained.zip ./publish/win-x86-self/*
        - run: zip -j9 ./publish/google-drive-client_win-x64.zip ./publish/win-x64/*

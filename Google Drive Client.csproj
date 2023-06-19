@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp5.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Devil7.Utils.GoogleDriveClient</RootNamespace>
     <AssemblyName>gdrive</AssemblyName>
     <StartupObject>Devil7.Utils.GoogleDriveClient.Program</StartupObject>
