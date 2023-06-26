@@ -1,0 +1,71 @@
+# Workflow for building and creating a release
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '7.0.x'
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Create Secrets
+        uses: danielr1996/envsubst-action@1.0.0
+        env:
+            GDRIVE_CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
+            GDRIVE_CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
+            GDRIVE_PROJECT_ID: ${{ secrets.GDRIVE_PROJECT_ID }}
+        with:
+          input: Utils/Secrets.ci.cs
+          output: Utils/Secrets.cs
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      - name: Get title & changelog
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: bash ./git-changelog.sh
+        id: title-changelog
+      - name: Publish
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          dotnet publish --configuration Release --framework net7.0 --runtime win-x86 --output ./publish/win-x86 --no-self-contained
+          dotnet publish --configuration Release --framework net7.0 --runtime win-x86 --output ./publish/win-x86-self --self-contained
+          dotnet publish --configuration Release --framework net7.0 --runtime win-x64 --output ./publish/win-x64 --no-self-contained
+          dotnet publish --configuration Release --framework net7.0 --runtime win-x64 --output ./publish/win-x64-self --self-contained
+          dotnet publish --configuration Release --framework net7.0 --runtime linux-x64 --output ./publish/linux-x64 --no-self-contained
+          dotnet publish --configuration Release --framework net7.0 --runtime linux-x64 --output ./publish/linux-x64-self --self-contained
+          dotnet publish --configuration Release --framework net7.0 --runtime linux-arm --output ./publish/linux-arm --no-self-contained
+          dotnet publish --configuration Release --framework net7.0 --runtime linux-arm --output ./publish/linux-arm-self --self-contained
+          dotnet publish --configuration Release --framework net7.0 --runtime osx-x64 --output ./publish/osx-x64 --no-self-contained
+          dotnet publish --configuration Release --framework net7.0 --runtime osx-x64 --output ./publish/osx-x64-self --self-contained
+          zip -j9 ./publish/google-drive-client_win-x86.zip ./publish/win-x86/*
+          zip -j9 ./publish/google-drive-client_win-x86_self-contained.zip ./publish/win-x86-self/*
+          zip -j9 ./publish/google-drive-client_win-x64.zip ./publish/win-x64/*
+          zip -j9 ./publish/google-drive-client_win-x64_self-contained.zip ./publish/win-x64-self/*
+          tar -cvzf ./publish/google-drive-client_linux-x64.tar.gz -C ./publish/linux-x64 .
+          tar -cvzf ./publish/google-drive-client_linux-x64_self-contained.tar.gz -C ./publish/linux-x64-self .
+          tar -cvzf ./publish/google-drive-client_linux-arm.tar.gz -C ./publish/linux-arm .
+          tar -cvzf ./publish/google-drive-client_linux-arm_self-contained.tar.gz -C ./publish/linux-arm-self .
+          tar -cvzf ./publish/google-drive-client_osx-x64.tar.gz -C ./publish/osx-x64 .
+          tar -cvzf ./publish/google-drive-client_osx-x64_self-contained.tar.gz -C ./publish/osx-x64-self .
+      - name: Create release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: ncipollo/release-action@v1
+        with:
+          name: ${{ steps.title-changelog.outputs.TITLE }}
+          artifacts: "publish/google-drive-client_*"
+          body: ${{ steps.title-changelog.outputs.CHANGELOG }}
+          draft: false
+          prerelease: false
